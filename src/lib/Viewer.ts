@@ -1,15 +1,18 @@
 import { Target, Tracker } from "./Tracker"
 
 type Reaction = (self: Viewer) => void
-type Cleanup = () => void
+type OnPurge = () => void
 
 export class Viewer implements Target {
   response: Reaction
-  oncleanup?: Cleanup
+  onpurge?: OnPurge
   poked: boolean
+  garbaged: boolean
 
   constructor(response: Reaction) {
     this.poked = false
+    this.garbaged = false
+    Tracker.registerChild(this)
     this.response = response
     this.poke()
   }
@@ -17,13 +20,24 @@ export class Viewer implements Target {
   poke() {
     if (!this.poked) {
       this.poked = true
-    } else if (this.oncleanup) {
-      this.oncleanup()
-      delete this.oncleanup
+    } else {
+      this.purge()
     }
     Tracker.targets.push(this)
     Tracker.linkage.unbond(this)
     this.response(this)
     Tracker.targets.pop()
+  }
+
+  purge() {
+    Tracker.purgeChildren(this)
+    if (!this.onpurge) return
+    this.onpurge()
+    delete this.onpurge
+  }
+
+  garbage() {
+    this.garbaged = true
+    Tracker.purgeChildren(this)
   }
 }

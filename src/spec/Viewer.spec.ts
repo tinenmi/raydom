@@ -40,28 +40,43 @@ describe('Viewer', () => {
     expect(callNumber).toBe(2)
   })
 
-  it('between the viewer pokes, a cleanup should be called for', async () => {
-    let cleanCount = 0
+  it('between the viewer pokes, a purge should be called for', async () => {
+    let purgeCount = 0
     let $value = $.new(0)
     new Viewer((self) => {
       $value()
-      self.oncleanup = () => { cleanCount++ }
+      self.onpurge = () => { purgeCount++ }
     })
     $value(1)
-    expect(cleanCount).toBe(1)
+    expect(purgeCount).toBe(1)
   })
 
-  it('the cleanup function needs to be set on every response', async () => {
-    let cleanCount = 0
+  it('the purge function needs to be set on every response', async () => {
+    let purgeCount = 0
     let $value = $.new(0)
     new Viewer((self) => {
       $value()
-      if (cleanCount == 0) {
-        self.oncleanup = () => { cleanCount++ }
+      if (purgeCount == 0) {
+        self.onpurge = () => { purgeCount++ }
       }
     })
     $value(1)
     $value(2)
-    expect(cleanCount).toBe(1)
+    expect(purgeCount).toBe(1)
+  })
+
+  it('viewers can be nested', async () => {
+    let calledTimes = 0
+
+    let $value = $.new(0)
+    let viewer = new Viewer(() => { 
+      let nested = new Viewer(() => { 
+        $value()
+        calledTimes++
+      })
+    })
+    viewer.poke()
+    $value(1)
+    expect(calledTimes).toBe(3)
   })
 })

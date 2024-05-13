@@ -79,4 +79,19 @@ describe('Viewer', () => {
     $value(1)
     expect(calledTimes).toBe(3)
   })
+
+  it('nested viewers have no effect on their parents', async () => {
+    let calledTimes = 0
+
+    let $value = $.new('')
+    let viewer = new Viewer(() => { 
+      calledTimes++
+      let nested = new Viewer(() => { 
+        $value()
+      })
+    })
+    viewer.poke()
+    $value('1')
+    expect(calledTimes).toBe(2)
+  })
 })

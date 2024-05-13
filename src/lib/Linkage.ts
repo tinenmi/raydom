@@ -1,9 +1,13 @@
 import { Target } from "./Tracker"
 
 export class Linkage {
-  map: Map<Ray<any>, Target> = new Map()
+  map: Map<Ray<any>, Set<Target>> = new Map()
 
   bond(target: Target, ray: Ray<any>) {
-    this.map.set(ray, target)
+    if (this.map.has(ray)) {
+      this.map.get(ray)?.add(target)
+    } else {
+      this.map.set(ray, new Set([target]))
+    }
   }
 }

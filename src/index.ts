@@ -1,1 +1,1 @@
-export { id } from './lib'
+export { $, Tracker } from './lib'

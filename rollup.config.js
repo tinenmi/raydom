@@ -1,4 +1,7 @@
 let typescript = require('@rollup/plugin-typescript')
+let { uglify } = require('rollup-plugin-uglify')
+
+let isProduction = process.env.NODE_ENV !== 'development'
 
 module.exports = {
   input: 'src/index.ts',
@@ -7,5 +10,17 @@ module.exports = {
     format: 'umd',
     name: 'raydom',
   },
-  plugins: [typescript()],
+  plugins: [
+    typescript(),
+    isProduction ? uglify({
+      compress: {
+        pure_funcs: [ 'console.log' ]
+      },
+      output: {
+        comments: (node, comment) => {
+          return comment.line === 1
+        }
+      }
+    }) : {},
+  ],
 }

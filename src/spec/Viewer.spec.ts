@@ -1,4 +1,4 @@
-import { Viewer } from "../lib/Viewer"
+import { Viewer, Tracker } from "../lib"
 
 describe('Viewer', () => {
   it('response must be called when viewer is created', () => {
@@ -12,5 +12,13 @@ describe('Viewer', () => {
     let viewer = new Viewer(() => { callNumber++ })
     viewer.poke()
     expect(callNumber).toBe(2)
+  })
+
+  it('during the response, the viewer should be one of the targets in the tracker', () => {
+    let targetCount = 0
+    new Viewer(() => { 
+      targetCount = Tracker.targets.length
+    })
+    expect(targetCount).toBe(1)
   })
 })

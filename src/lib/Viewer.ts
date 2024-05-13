@@ -1,6 +1,8 @@
+import { Target, Tracker } from "./Tracker"
+
 type Reaction = (self: Viewer) => void
 
-export class Viewer {
+export class Viewer implements Target {
   response: Reaction
   
   constructor(response: Reaction) {
@@ -9,6 +11,8 @@ export class Viewer {
   }
 
   poke() {
+    Tracker.targets.push(this)
     this.response(this)
+    Tracker.targets.pop()
   }
 }

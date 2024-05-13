@@ -1,4 +1,4 @@
-import { Viewer, Tracker } from "../lib/index"
+import { Viewer, Tracker, $ } from "../lib/index"
 
 describe('Viewer', () => {
   it('response must be called when viewer is created', () => {
@@ -27,5 +27,16 @@ describe('Viewer', () => {
     new Viewer(() => { })
     targetCount = Tracker.targets.length
     expect(targetCount).toBe(0)
+  })
+
+  it('veiwer must be track cells', async () => {
+    let callNumber = 0
+    let $value = $.new(0)
+    new Viewer(() => {
+      $value()
+      callNumber++
+    })
+    $value(1)
+    expect(callNumber).toBe(2)
   })
 })

@@ -1,4 +1,4 @@
-import { Viewer, Tracker } from "../lib"
+import { Viewer, Tracker } from "../lib/index"
 
 describe('Viewer', () => {
   it('response must be called when viewer is created', () => {

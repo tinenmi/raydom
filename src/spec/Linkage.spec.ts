@@ -1,4 +1,4 @@
-import { $, Linkage, Viewer } from "../lib"
+import { $, Linkage, Viewer } from "../lib/index"
 
 describe('Linkage', () => {
   it('add a one-to-one bond to linkage', async () => {

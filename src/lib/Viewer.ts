@@ -12,6 +12,7 @@ export class Viewer implements Target {
 
   poke() {
     Tracker.targets.push(this)
+    Tracker.linkage.unbond(this)
     this.response(this)
     Tracker.targets.pop()
   }

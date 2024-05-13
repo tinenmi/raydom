@@ -1,4 +1,5 @@
-export { $ } from './$'
+export { $, $Interface } from './$'
 export { Tracker } from './Tracker'
 export { Viewer } from './Viewer'
 export { Linkage } from './Linkage'
+export { View, ViewInterface } from './View'

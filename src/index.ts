@@ -1,1 +1,1 @@
-export { $, Tracker, Viewer } from './lib/index'
+export { $, $Interface, Tracker, Viewer, View, ViewInterface } from './lib/index'

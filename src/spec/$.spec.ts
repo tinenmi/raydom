@@ -29,6 +29,12 @@ describe('$', () => {
   it('when reading $ prompts the tracker to monitor its state', () => {
     let $value = $.new(1)
     let value = $value()
-    expect(Tracker.tease).toHaveBeenCalledTimes(1);
+    expect(Tracker.tease).toHaveBeenCalledTimes(1)
+  })
+
+  it('when writing $ notifies the tracker of its change', () => {
+    let $value = $.new(1)
+    $value(2)
+    expect(Tracker.poke).toHaveBeenCalledTimes(1)
   })
 })

@@ -14,7 +14,7 @@ export class $<T>{
   call(self: State<T>, newValue?: T): T {
     if (newValue) {
       this.value = newValue
-      Tracker.poke(self)
+      Tracker.linkage.poke(self)
     } else {
       Tracker.tease(self)
     }

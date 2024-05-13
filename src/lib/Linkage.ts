@@ -12,8 +12,17 @@ export class Linkage {
   }
 
   unbond(target: Target) {
-    for(let targetSet of this.map.values()) {
+    for(let [ray, targetSet] of this.map) {
       targetSet.delete(target)
+      if (targetSet.size === 0) {
+        this.map.delete(ray)
+      }
+    }
+  }
+
+  poke(ray: Ray<any>) {
+    for(let target of this.map.get(ray) || []) {
+        target.poke()
     }
   }
 }

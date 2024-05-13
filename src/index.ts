@@ -1,1 +1,1 @@
-export { $, Tracker } from './lib'
+export { $, Tracker, Viewer } from './lib'

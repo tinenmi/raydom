@@ -1,4 +1,4 @@
-import { $, View } from "../lib/index"
+import { $, P, View, cast } from "../lib/index"
 
 describe('Signal test', () => {
   it('view has to computed', async () => {
@@ -14,4 +14,13 @@ describe('Signal test', () => {
     let value = $value()
     expect(value).toBe(2)
   }) 
+
+  it('view can be created as cast', async () => {
+    let $sourceValue = $.new(1)
+    let doubler = cast((value: number) => value * 2)
+    let $value = P($sourceValue, doubler)
+    $sourceValue(2)
+    let value = $value()
+    expect(value).toBe(4)
+  })
 })

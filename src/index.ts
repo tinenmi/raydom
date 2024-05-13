@@ -1,1 +1,1 @@
-export { $, $Interface, Tracker, Viewer, View, ViewInterface } from './lib/index'
+export { $, $Interface, Tracker, Viewer, View, ViewInterface, P, cast } from './lib/index'

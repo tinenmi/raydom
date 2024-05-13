@@ -9,7 +9,7 @@ export class Viewer implements Target {
   poked: boolean
   garbaged: boolean
 
-  constructor(response: Reaction) {
+  private constructor(response: Reaction) {
     this.poked = false
     this.garbaged = false
     Tracker.registerChild(this)
@@ -39,5 +39,9 @@ export class Viewer implements Target {
   garbage() {
     this.garbaged = true
     Tracker.purgeChildren(this)
+  }
+
+  static new(response: Reaction) {
+    return new Viewer(response)
   }
 }

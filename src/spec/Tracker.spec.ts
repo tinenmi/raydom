@@ -3,7 +3,7 @@ import { $, Tracker, Viewer } from "../lib/index"
 describe('Tracker', () => {
   it('poke a target', async () => {
     let calledTimes = 0
-    let viewer = new Viewer(() => { calledTimes++ })
+    let viewer = Viewer.new(() => { calledTimes++ })
     let $value = $.new(0)
     Tracker.linkage.bond(viewer, $value)
     let calledTimes_beforePoke = calledTimes
@@ -15,7 +15,7 @@ describe('Tracker', () => {
 
   it('tease a target', async () => {
     let calledTimes = 0
-    let viewer = new Viewer(() => { calledTimes++ })
+    let viewer = Viewer.new(() => { calledTimes++ })
     let $value = $.new(0)
     Tracker.targets.push(viewer)
     Tracker.tease($value)

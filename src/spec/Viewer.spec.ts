@@ -3,20 +3,20 @@ import { Viewer, Tracker, $ } from "../lib/index"
 describe('Viewer', () => {
   it('response must be called when viewer is created', () => {
     let called = false
-    new Viewer(() => { called = true })
+    Viewer.new(() => { called = true })
     expect(called).toBe(true)
   })
 
   it('response must be called after a poke', () => {
     let callNumber = 0
-    let viewer = new Viewer(() => { callNumber++ })
+    let viewer = Viewer.new(() => { callNumber++ })
     viewer.poke()
     expect(callNumber).toBe(2)
   })
 
   it('during the response, the viewer should be one of the targets in the tracker', () => {
     let targetCount = 0
-    new Viewer(() => { 
+    Viewer.new(() => { 
       targetCount = Tracker.targets.length
     })
     expect(targetCount).toBe(1)
@@ -24,7 +24,7 @@ describe('Viewer', () => {
 
   it('after the response, the viewer should not be one of the targets in the tracker', () => {
     let targetCount = 0
-    new Viewer(() => { })
+    Viewer.new(() => { })
     targetCount = Tracker.targets.length
     expect(targetCount).toBe(0)
   })
@@ -32,7 +32,7 @@ describe('Viewer', () => {
   it('viewer must be track cells', async () => {
     let callNumber = 0
     let $value = $.new(0)
-    new Viewer(() => {
+    Viewer.new(() => {
       $value()
       callNumber++
     })
@@ -43,7 +43,7 @@ describe('Viewer', () => {
   it('between the viewer pokes, a purge should be called for', async () => {
     let purgeCount = 0
     let $value = $.new(0)
-    new Viewer((self) => {
+    Viewer.new((self) => {
       $value()
       self.onpurge = () => { purgeCount++ }
     })
@@ -54,7 +54,7 @@ describe('Viewer', () => {
   it('the purge function needs to be set on every response', async () => {
     let purgeCount = 0
     let $value = $.new(0)
-    new Viewer((self) => {
+    Viewer.new((self) => {
       $value()
       if (purgeCount == 0) {
         self.onpurge = () => { purgeCount++ }
@@ -69,8 +69,8 @@ describe('Viewer', () => {
     let calledTimes = 0
 
     let $value = $.new(0)
-    let viewer = new Viewer(() => { 
-      let nested = new Viewer(() => { 
+    let viewer = Viewer.new(() => { 
+      let nested = Viewer.new(() => { 
         $value()
         calledTimes++
       })
@@ -84,9 +84,9 @@ describe('Viewer', () => {
     let calledTimes = 0
 
     let $value = $.new('')
-    let viewer = new Viewer(() => { 
+    let viewer = Viewer.new(() => { 
       calledTimes++
-      let nested = new Viewer(() => { 
+      let nested = Viewer.new(() => { 
         $value()
       })
     })

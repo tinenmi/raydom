@@ -18,4 +18,15 @@ describe('Linkage', () => {
     expect(linkage.map.size).toBe(1)
     expect(linkage.map.get($value)?.size).toBe(2)
   })
+
+  it('remove one linkage', async () => {
+    var linkage = new Linkage()
+    var viewers = [ new Viewer(() => {}), new Viewer(() => {})]
+    let $value = $.new(0)
+    linkage.bond(viewers[1], $value)
+    linkage.bond(viewers[2], $value)
+    linkage.unbond(viewers[1])
+    expect(linkage.map.size).toBe(1)
+    expect(linkage.map.get($value)?.size).toBe(1)
+  }) 
 })

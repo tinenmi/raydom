@@ -10,4 +10,10 @@ export class Linkage {
       this.map.set(ray, new Set([target]))
     }
   }
+
+  unbond(target: Target) {
+    for(let targetSet of this.map.values()) {
+      targetSet.delete(target)
+    }
+  }
 }

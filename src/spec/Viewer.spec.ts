@@ -50,4 +50,18 @@ describe('Viewer', () => {
     $value(1)
     expect(cleanCount).toBe(1)
   })
+
+  it('the cleanup function needs to be set on every response', async () => {
+    let cleanCount = 0
+    let $value = $.new(0)
+    new Viewer((self) => {
+      $value()
+      if (cleanCount == 0) {
+        self.oncleanup = () => { cleanCount++ }
+      }
+    })
+    $value(1)
+    $value(2)
+    expect(cleanCount).toBe(1)
+  })
 })

@@ -19,6 +19,7 @@ export class Viewer implements Target {
       this.poked = true
     } else if (this.oncleanup) {
       this.oncleanup()
+      delete this.oncleanup
     }
     Tracker.targets.push(this)
     Tracker.linkage.unbond(this)

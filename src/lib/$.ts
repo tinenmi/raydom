@@ -1,7 +1,7 @@
 import { Tracker } from "./Tracker"
 
-interface State<T> extends Ray<T> {
-    (newValue?: T): T
+interface $Interface<T> extends Ray<T> {
+  (newValue?: T): T | undefined
 }
 
 export class $<T>{
@@ -11,7 +11,7 @@ export class $<T>{
     this.value = initialValue
   }
 
-  call(self: State<T>, newValue?: T): T {
+  call(self: $Interface<T>, newValue?: T): T {
     if (newValue) {
       this.value = newValue
       Tracker.linkage.poke(self)
@@ -21,7 +21,7 @@ export class $<T>{
     return this.value
   }
 
-  public static new<T>(initialValue: T): State<T> {
+  public static new<T>(initialValue: T): $Interface<T> {
     let instance = new $<T>(initialValue)
     let self = (newValue?: T) => instance.call(self, newValue)
     return self

@@ -1,3 +1,3 @@
 interface Ray<T> {
-    (): T
+    (): T | undefined
 }

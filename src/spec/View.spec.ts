@@ -1,4 +1,4 @@
-import { $, P, View, cast } from "../lib/index"
+import { $, P, View, cast, lense } from "../lib/index"
 
 describe('Signal test', () => {
   it('view has to computed', async () => {
@@ -22,5 +22,13 @@ describe('Signal test', () => {
     $sourceValue(2)
     let value = $value()
     expect(value).toBe(4)
+  })
+
+  it('view can be created as lense', async () => {
+    let $rootValue = $.new({ prop: 1})
+    let $value = P($rootValue, lense('prop'))
+    $rootValue({ prop: 2})
+    let value = $value()
+    expect(value).toEqual(2)
   })
 })

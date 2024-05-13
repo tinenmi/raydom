@@ -29,7 +29,7 @@ describe('Viewer', () => {
     expect(targetCount).toBe(0)
   })
 
-  it('veiwer must be track cells', async () => {
+  it('viewer must be track cells', async () => {
     let callNumber = 0
     let $value = $.new(0)
     new Viewer(() => {
@@ -38,5 +38,16 @@ describe('Viewer', () => {
     })
     $value(1)
     expect(callNumber).toBe(2)
+  })
+
+  it('between the viewer pokes, a cleanup should be called for', async () => {
+    let cleanCount = 0
+    let $value = $.new(0)
+    new Viewer((self) => {
+      $value()
+      self.oncleanup = () => { cleanCount++ }
+    })
+    $value(1)
+    expect(cleanCount).toBe(1)
   })
 })

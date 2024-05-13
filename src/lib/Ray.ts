@@ -1,0 +1,3 @@
+interface Ray<T> {
+    (): T
+}

@@ -1,5 +1,5 @@
-interface State<T> {
-    (): T
+interface State<T> extends Ray<T> {
+
 }
 
 export class $<T>{

@@ -1,5 +1,5 @@
 interface State<T> extends Ray<T> {
-
+    (newValue?: T): T
 }
 
 export class $<T>{
@@ -9,12 +9,15 @@ export class $<T>{
     this.value = initialValue
   }
 
-  call(): T {
+  call(newValue?: T): T {
+    if (newValue) {
+      this.value = newValue
+    }
     return this.value
   }
 
   public static new<T>(initialValue: T): State<T> {
     const instance = new $<T>(initialValue)
-    return () => instance.call()
+    return (newValue?: T) => instance.call(newValue)
   }
 }

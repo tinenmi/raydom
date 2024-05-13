@@ -11,4 +11,11 @@ describe('$', () => {
     let $value: Ray<number> = $.new(1)
     expect(true).toEqual(true)
   })
+
+  it('$ allows to set a new value', () => {
+    let $value = $.new(1)
+    $value(2)
+    let value = $value()
+    expect(value).toEqual(2)
+  })
 })

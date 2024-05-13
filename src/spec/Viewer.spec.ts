@@ -21,4 +21,11 @@ describe('Viewer', () => {
     })
     expect(targetCount).toBe(1)
   })
+
+  it('after the response, the viewer should not be one of the targets in the tracker', () => {
+    let targetCount = 0
+    new Viewer(() => { })
+    targetCount = Tracker.targets.length
+    expect(targetCount).toBe(0)
+  })
 })

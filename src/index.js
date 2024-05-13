@@ -1,1 +1,1 @@
-export let id = x => x
+export { id } from './lib/index'

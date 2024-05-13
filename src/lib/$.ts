@@ -1,3 +1,5 @@
+import { Tracker } from "./Tracker"
+
 interface State<T> extends Ray<T> {
     (newValue?: T): T
 }
@@ -9,15 +11,18 @@ export class $<T>{
     this.value = initialValue
   }
 
-  call(newValue?: T): T {
+  call(self: State<T>, newValue?: T): T {
     if (newValue) {
       this.value = newValue
+    } else {
+        Tracker.tease(self)
     }
     return this.value
   }
 
   public static new<T>(initialValue: T): State<T> {
-    const instance = new $<T>(initialValue)
-    return (newValue?: T) => instance.call(newValue)
+    let instance = new $<T>(initialValue)
+    let self = (newValue?: T) => instance.call(self, newValue)
+    return self
   }
 }

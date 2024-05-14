@@ -1,7 +1,6 @@
-import { Tag } from "./T"
+import { Content, Tag } from "./T"
 import { View } from "./View"
 
-type Content = string | Iterable<Content> | Ray<Content> | Tag
 type DOM = Node | Iterable<Node>
 
 let clearChildren = (el: Element) => { while(el.lastChild) el.removeChild(el.lastChild) }

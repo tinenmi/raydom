@@ -1,3 +1,4 @@
+import { $ } from "../lib/$"
 import { DomRenderer } from "../lib/DomRenderer"
 
 describe('Dom renderer', () => {
@@ -43,6 +44,19 @@ describe('Dom renderer', () => {
     let renderer = new DomRenderer(root)
     renderer.render('Root there')
     renderer.render('Root here')
+    expect(root?.innerHTML).toBe('Root here')
+  })
+
+  it('render ray', async () => {
+    document.body.innerHTML = `
+      <div id="root"></div>
+    `
+
+    let root = document.getElementById('root') as Element
+    let renderer = new DomRenderer(root)
+    let $model = $.new('Root there')
+    renderer.render($model)
+    $model('Root here')
     expect(root?.innerHTML).toBe('Root here')
   })
 })

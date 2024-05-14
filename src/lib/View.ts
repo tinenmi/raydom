@@ -18,7 +18,7 @@ export class View<T> {
       let newValue = computeFunction()
       this.$value(newValue)
     })
-    this.value = computeFunction()
+    this.value = this.$value()
   }
 
   call(self: ViewInterface<T>): T | undefined {

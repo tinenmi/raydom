@@ -1,4 +1,5 @@
 import { $, P, View, cast, lense } from "../lib/index"
+import { ray } from "../lib/view-helpers/ray"
 
 describe('Signal test', () => {
   it('view has to computed', async () => {
@@ -30,5 +31,13 @@ describe('Signal test', () => {
     $rootValue({ prop: 2})
     let value = $value()
     expect(value).toEqual(2)
+  })
+
+  it('view can be created as ray', async () => {
+    let $data = $.new(1)
+    let $view = ray`View has data: ${$data}`
+    $data(2)
+    let view = $view()
+    expect(view).toEqual('View has data: 2')
   })
 })

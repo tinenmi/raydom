@@ -130,4 +130,17 @@ describe('Dom renderer', () => {
     renderer.render(T('div', { id: 'child' }))
     expect(root?.innerHTML).toBe('<div id="child"></div>')
   })
+
+  it('render simple tag with ray attributes', async () => {
+    document.body.innerHTML = `
+      <div id="root"></div>
+    `
+
+    let root = document.getElementById('root') as Element
+    let renderer = new DomRenderer(root)
+    let $model = $.new('child')
+    renderer.render(T('div', { id: $model }))
+    $model('container')
+    expect(root?.innerHTML).toBe('<div id="container"></div>')
+  })
 })

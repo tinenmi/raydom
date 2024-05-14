@@ -27,7 +27,8 @@ export class View<T> {
 
   public static new<T>(computeFunction: ComputeFunction<T>): ViewInterface<T> {
     let instance = new View<T>(computeFunction)
-    let self = () => instance.call(self)
+    let self: any = () => instance.call(self)
+    self.isRay = true
     return self
   }
 }

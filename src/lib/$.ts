@@ -23,7 +23,8 @@ export class $<T>{
 
   public static new<T>(initialValue?: T): $Interface<T> {
     let instance = new $<T>(initialValue)
-    let self = (newValue?: T) => instance.call(self, newValue)
+    let self: any = (newValue?: T) => instance.call(self, newValue)
+    self.isRay = true
     return self
   }
 }

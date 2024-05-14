@@ -1,5 +1,6 @@
 import { Content, Tag } from "./T"
 import { View } from "./View"
+import { Viewer } from "./Viewer"
 
 type DOM = Node | Iterable<Node>
 
@@ -66,7 +67,21 @@ export class DomRenderer {
     let result = document.createElement(content.tagName)
 
     if (content.attrs) {
-      Object.assign(result, content.attrs)
+      let allAttrs: any = content.attrs   
+      let plainAttrs: any = {}  
+      Object.keys(allAttrs).forEach(key => {
+        // @ts-ignore
+        if (allAttrs[key].isRay) {
+          let $value = allAttrs[key] 
+          Viewer.new(() => {
+            let value = $value();
+            (result as any)[key] = value
+          })
+        } else {
+            plainAttrs[key] = allAttrs[key]
+        }
+      })
+      Object.assign(result, plainAttrs)
     }
 
     if (content.children) {

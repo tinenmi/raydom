@@ -1,5 +1,6 @@
 import { $ } from "../lib/$"
 import { DomRenderer } from "../lib/DomRenderer"
+import { T } from "../lib/T"
 
 describe('Dom renderer', () => {
   it('render string', async () => {
@@ -71,5 +72,16 @@ describe('Dom renderer', () => {
     renderer.render($model)
     $model(['Root', ' here'])
     expect(root?.innerHTML).toBe('Root here')
+  })
+
+  it('render simple tag', async () => {
+    document.body.innerHTML = `
+      <div id="root"></div>
+    `
+
+    let root = document.getElementById('root') as Element
+    let renderer = new DomRenderer(root)
+    renderer.render(T('div'))
+    expect(root?.innerHTML).toBe('<div></div>')
   })
 })

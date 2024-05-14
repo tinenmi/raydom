@@ -1,42 +1,38 @@
+import { Tag } from "./T"
 import { View } from "./View"
 
-type Content = string | Iterable<Content> | Ray<Content>
-type DOM = Text | Iterable<Text>
+type Content = string | Iterable<Content> | Ray<Content> | Tag
+type DOM = Node | Iterable<Node>
 
 let clearChildren = (el: Element) => { while(el.lastChild) el.removeChild(el.lastChild) }
 
 let replaceWith = (oldDom: DOM | undefined, newDom: DOM) => {
-  if (typeof oldDom !== 'undefined') {
-    if (oldDom instanceof Text) {
-      if (newDom instanceof Text) {
-        (oldDom as Text).replaceWith(newDom)
-      } else {
-        (oldDom as Text).replaceWith(...newDom)
-      }
-    } else {
-      if (newDom instanceof Text) {
-        newDom = [ newDom ]
-      }
-      let oldIterator = oldDom[Symbol.iterator]()
-      let newIterator = newDom[Symbol.iterator]()
+  if (typeof oldDom === 'undefined') { return }
+  if (oldDom instanceof Node && newDom instanceof Node) {
+    let parent: Element | null = (oldDom as Node).parentElement
+    parent?.replaceChild(newDom as Node, oldDom as Node)
+  } else {
+    if (oldDom instanceof Node) { oldDom = [ oldDom ] }
+    if (newDom instanceof Node) { newDom = [ newDom ] }
+    let oldIterator = oldDom[Symbol.iterator]()
+    let newIterator = newDom[Symbol.iterator]()
 
-      let oldItem = oldIterator.next()
-      let newItem = newIterator.next()
+    let oldItem = oldIterator.next()
+    let newItem = newIterator.next()
 
-      let parent: Element | null = null
-      while(!oldItem.done || !newItem.done) {
-        if (!oldItem.done && !newItem.done) {
-          parent = (oldItem.value as Text).parentElement;
-          (oldItem.value as Text).replaceWith(newItem.value)
-        } else if (!oldItem.done) {
-           parent?.appendChild(newItem.value)
-        } else if (!newItem.done) {
-           parent?.removeChild(oldItem.value)
-        }
-
-        if (!oldItem.done) { oldItem = oldIterator.next() }
-        if (!newItem.done) { newItem = newIterator.next() }
+    let parent: Element | null = null
+    while(!oldItem.done || !newItem.done) {
+      if (!oldItem.done && !newItem.done) {
+        parent = (oldItem.value as Text).parentElement;
+        (oldItem.value as Text).replaceWith(newItem.value)
+      } else if (!oldItem.done) {
+        parent?.appendChild(newItem.value)
+      } else if (!newItem.done) {
+        parent?.removeChild(oldItem.value)
       }
+
+      if (!oldItem.done) { oldItem = oldIterator.next() }
+      if (!newItem.done) { newItem = newIterator.next() }
     }
   }
 }
@@ -48,15 +44,15 @@ export class DomRenderer {
     this.renderTarget = renderTarget
   }
 
-  createText(content: string): Text {
+  newText(content: string): Text {
     return document.createTextNode(content)
   }
 
-  createIterable(content: Iterable<Content>): Iterable<Text> {
-    let result: Text[] = []
+  newIterable(content: Iterable<Content>): Iterable<Node> {
+    let result: Node[] = []
     for(let item of content) {
-      let renderedItem = this.createItem(item)
-      if (renderedItem instanceof Text) {
+      let renderedItem = this.newItem(item)
+      if (renderedItem instanceof Node) {
         result.push(renderedItem)
         continue
       }
@@ -65,13 +61,17 @@ export class DomRenderer {
     return result
   }
 
-  renderRay($content: Ray<Content>): DOM {
+  newTag(content: Tag): DOM {
+    return document.createElement(content.name)
+  }
+
+  newView($content: Ray<Content>): DOM {
     let oldResult: DOM | undefined
 
     let $result = View.new(() => {
       let content = $content()
       if (typeof content === 'undefined') { return [] }
-      let result = this.createItem(content as Content)
+      let result = this.newItem(content as Content)
       replaceWith(oldResult, result)
       return oldResult = result
     })
@@ -79,23 +79,26 @@ export class DomRenderer {
     return $result() as DOM
   }
 
-  createItem(content: Content): DOM {
+  newItem(content: Content): DOM {
     if (typeof content === 'string') {
-      return this.createText(content as string)
+      return this.newText(content as string)
+    }
+    if (typeof (content as Tag).name === 'string') {
+      return this.newTag(content as Tag)
     }
     if (typeof content === 'function') {
-      return this.renderRay(content as Ray<Content>)
+      return this.newView(content as Ray<Content>)
     }
-    return this.createIterable(content as Iterable<Content>)
+    return this.newIterable(content as Iterable<Content>)
   }
 
   render(content: Content) {
     clearChildren(this.renderTarget)
-    let dom = this.createItem(content)
-    if (dom instanceof Text) {
-        this.renderTarget.appendChild(dom)
+    let dom = this.newItem(content)
+    if (dom instanceof Node) {
+      this.renderTarget.appendChild(dom)
     } else {
-        this.renderTarget.append(...dom)
+      this.renderTarget.append(...dom)
     }
   }
 }

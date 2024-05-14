@@ -1,3 +1,5 @@
+type Content = string | Iterable<Content>
+
 export class DomRenderer {
   renderTarget: Element
 
@@ -9,13 +11,17 @@ export class DomRenderer {
     this.renderTarget.append(content)
   }
 
-  render(content: string | Iterable<string>) {
-    if (typeof content[Symbol.iterator] === 'function') {
-      for(let item of content) {
-        this.renderString(item as string)
-      }
+  renderIterable(content: Iterable<Content>) {
+    for(let item of content) {
+      this.render(item)
+    }
+  }
+
+  render(content: Content) {
+    if (typeof content === 'string') {
+      this.renderString(content as string)
       return
     }
-    this.renderString(content as string)
+    this.renderIterable(content as Iterable<Content>)
   }
 }

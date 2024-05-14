@@ -99,6 +99,16 @@ export class DomRenderer {
       return this.newDomElement(tagName, attrs || {}, children)
     }
 
+    if ((tagName as Tag).isTag) {
+      let innerTag = tagName as Tag
+      return this.newTag({
+        tagName: innerTag.tagName,
+        attrs: { ...innerTag.attrs, ...attrs },
+        children,
+        isTag: true
+      })
+    }
+
     let Component = tagName as Function
     let $raydom = $.new<Content>()
     Component({...attrs, children, $raydom})
@@ -126,8 +136,7 @@ export class DomRenderer {
     if (typeof content === 'string') {
       return newText(content as string)
     }
-    if (typeof (content as Tag).tagName === 'string' || 
-      typeof (content as Tag).tagName === 'function') {
+    if ((content as Tag).isTag) {
       return this.newTag(content as Tag)
     }
     if (typeof content === 'function') {

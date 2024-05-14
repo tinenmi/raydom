@@ -6,7 +6,7 @@ export let ray = (text: TemplateStringsArray, ...values: any) => {
     for(let i = 0; i < text.length; i++) {
       let staticString = text[i]  
       let dynamicValue = values[i]
-      if (typeof dynamicValue === 'function') {
+      if (dynamicValue?.isRay) {
         dynamicValue = dynamicValue()
       }
       if (typeof dynamicValue === 'undefined') {

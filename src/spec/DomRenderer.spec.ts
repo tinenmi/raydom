@@ -166,4 +166,28 @@ describe('Dom renderer', () => {
     $model('container')
     expect(root?.innerHTML).toBe('<div>container</div>')
   })
+
+  it('props components', async () => {
+    document.body.innerHTML = `
+      <div id="root"></div>
+    `
+    let Title = T('h1', { className: 'title' })
+
+    interface Props {
+      $title: Ray<string>
+      $raydom: $Interface<Content>
+    }
+
+    let Component = (({ $title, $raydom }: Props) => {
+      Viewer.new(() => {
+        $raydom(T(Title, [ $title ] ))
+      })
+    })
+
+    let root = document.getElementById('root') as Element
+    let renderer = new DomRenderer(root)
+    let $model = $.new('child')
+    renderer.render(T(Component, { $title: $model }, []))
+    expect(root?.innerHTML).toBe('<h1 class="title">child</h1>')
+  })
 })

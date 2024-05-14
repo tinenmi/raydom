@@ -1,7 +1,7 @@
 import { $, P, View, cast, lense } from "../lib/index"
 import { ray } from "../lib/view-helpers/ray"
 
-describe('Signal test', () => {
+describe('View', () => {
   it('view has to computed', async () => {
     let $value = View.new(() => 1)
     let value = $value()
@@ -33,7 +33,7 @@ describe('Signal test', () => {
     expect(value).toEqual(2)
   })
 
-  it('view can be created as ray', async () => {
+  it('view can be created as ray template string', async () => {
     let $data = $.new(1)
     let $view = ray`View has data: ${$data}`
     $data(2)

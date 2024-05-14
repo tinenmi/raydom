@@ -1,6 +1,7 @@
-import { $ } from "../lib/$"
+import { $, $Interface } from "../lib/$"
 import { DomRenderer } from "../lib/DomRenderer"
-import { T } from "../lib/T"
+import { Content, T } from "../lib/T"
+import { Viewer } from "../lib/Viewer"
 
 describe('Dom renderer', () => {
   it('render string', async () => {
@@ -142,5 +143,27 @@ describe('Dom renderer', () => {
     renderer.render(T('div', { id: $model }))
     $model('container')
     expect(root?.innerHTML).toBe('<div id="container"></div>')
+  })
+
+  it('render components', async () => {
+    document.body.innerHTML = `
+      <div id="root"></div>
+    `
+    interface Props {
+      $title: Ray<string>
+      $raydom: $Interface<Content>
+    }
+    let Component = (({ $title, $raydom }: Props) => {
+      Viewer.new(() => {
+        $raydom(T('div', [ $title ] ))
+      })
+    })
+
+    let root = document.getElementById('root') as Element
+    let renderer = new DomRenderer(root)
+    let $model = $.new('child')
+    renderer.render(T(Component, { $title: $model }, []))
+    $model('container')
+    expect(root?.innerHTML).toBe('<div>container</div>')
   })
 })

@@ -1,3 +1,4 @@
+import { $ } from "./$"
 import { Content, Tag } from "./T"
 import { View } from "./View"
 import { Viewer } from "./Viewer"
@@ -39,15 +40,15 @@ let replaceWith = (oldDom: DOM | undefined, newDom: DOM) => {
   }
 }
 
+let newText = (content: string): Text => {
+  return document.createTextNode(content)
+}
+
 export class DomRenderer {
   renderTarget: Element
 
   constructor(renderTarget: Element) {
     this.renderTarget = renderTarget
-  }
-
-  newText(content: string): Text {
-    return document.createTextNode(content)
   }
 
   newIterable(content: Iterable<Content>): Iterable<Node> {
@@ -63,11 +64,11 @@ export class DomRenderer {
     return result
   }
 
-  newTag(content: Tag): DOM {
-    let result = document.createElement(content.tagName)
+  newDomElement(tagName: string, attrs?: {}, children?: Iterable<Content>): DOM {
+    let result = document.createElement(tagName)
 
-    if (content.attrs) {
-      let allAttrs: any = content.attrs   
+    if (attrs) {
+      let allAttrs: any = attrs   
       let plainAttrs: any = {}  
       Object.keys(allAttrs).forEach(key => {
         // @ts-ignore
@@ -84,12 +85,24 @@ export class DomRenderer {
       Object.assign(result, plainAttrs)
     }
 
-    if (content.children) {
-      let chidlren = this.newIterable(content.children)
+    if (children) {
+      let chidlren = this.newIterable(children)
       result.append(...chidlren)
     }
 
     return result
+  }
+
+  newTag(content: Tag): DOM {
+    let { tagName, attrs, children } = content
+    if (typeof tagName === 'string') {
+      return this.newDomElement(tagName, attrs || {}, children)
+    }
+
+    let Component = tagName as Function
+    let $raydom = $.new<Content>()
+    Component({...attrs, children, $raydom})
+    return this.newView($raydom)
   }
 
   newView($content: Ray<Content>): DOM {
@@ -107,10 +120,14 @@ export class DomRenderer {
   }
 
   newItem(content: Content): DOM {
-    if (typeof content === 'string') {
-      return this.newText(content as string)
+    if (typeof content === 'undefined') {
+      return newText('')
     }
-    if (typeof (content as Tag).tagName === 'string') {
+    if (typeof content === 'string') {
+      return newText(content as string)
+    }
+    if (typeof (content as Tag).tagName === 'string' || 
+      typeof (content as Tag).tagName === 'function') {
       return this.newTag(content as Tag)
     }
     if (typeof content === 'function') {

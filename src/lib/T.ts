@@ -1,13 +1,13 @@
 export type Content = string | Iterable<Content> | Ray<Content> | Tag
 
 export interface Tag {
-  tagName: string
+  tagName: string | Function
   attrs?: {}
   children?: Iterable<Content>
 }
 
 export let T = (
-  tagName: string,
+  tagName: string | Function,
   attrs?: {} | Iterable<Content>,
   children?: Iterable<Content>
 ): Tag => {

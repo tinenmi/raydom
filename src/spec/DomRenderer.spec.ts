@@ -59,4 +59,17 @@ describe('Dom renderer', () => {
     $model('Root here')
     expect(root?.innerHTML).toBe('Root here')
   })
+
+  it('render ray of iterable', async () => {
+    document.body.innerHTML = `
+      <div id="root"></div>
+    `
+
+    let root = document.getElementById('root') as Element
+    let renderer = new DomRenderer(root)
+    let $model = $.new(['Root', ' there'])
+    renderer.render($model)
+    $model(['Root', ' here'])
+    expect(root?.innerHTML).toBe('Root here')
+  })
 })

@@ -1,5 +1,7 @@
 type Content = string | Iterable<Content>
 
+let clearChildren = (el: Element) => { while(el.lastChild) el.removeChild(el.lastChild) }
+
 export class DomRenderer {
   renderTarget: Element
 
@@ -13,15 +15,20 @@ export class DomRenderer {
 
   renderIterable(content: Iterable<Content>) {
     for(let item of content) {
-      this.render(item)
+      this.renderItem(item)
     }
   }
 
-  render(content: Content) {
+  renderItem(content: Content) {
     if (typeof content === 'string') {
       this.renderString(content as string)
       return
     }
     this.renderIterable(content as Iterable<Content>)
+  }
+
+  render(content: Content) {
+    clearChildren(this.renderTarget)
+    this.renderItem(content)
   }
 }

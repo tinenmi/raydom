@@ -33,4 +33,16 @@ describe('Dom renderer', () => {
     renderer.render([[ 'Root', ' there' ], ' and here'])
     expect(root?.innerHTML).toBe('Root there and here')
   })
+
+  it('rerender string', async () => {
+    document.body.innerHTML = `
+      <div id="root"></div>
+    `
+
+    let root = document.getElementById('root') as Element
+    let renderer = new DomRenderer(root)
+    renderer.render('Root there')
+    renderer.render('Root here')
+    expect(root?.innerHTML).toBe('Root here')
+  })
 })

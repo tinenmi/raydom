@@ -65,6 +65,10 @@ export class DomRenderer {
   newTag(content: Tag): DOM {
     let result = document.createElement(content.tagName)
 
+    if (content.attrs) {
+      Object.assign(result, content.attrs)
+    }
+
     if (content.children) {
       let chidlren = this.newIterable(content.children)
       result.append(...chidlren)

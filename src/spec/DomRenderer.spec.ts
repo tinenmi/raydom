@@ -119,4 +119,15 @@ describe('Dom renderer', () => {
     $model('Root here')
     expect(root?.innerHTML).toBe('<div>Root here</div>')
   })
+
+  it('render simple tag with attributes', async () => {
+    document.body.innerHTML = `
+      <div id="root"></div>
+    `
+
+    let root = document.getElementById('root') as Element
+    let renderer = new DomRenderer(root)
+    renderer.render(T('div', { id: 'child' }))
+    expect(root?.innerHTML).toBe('<div id="child"></div>')
+  })
 })

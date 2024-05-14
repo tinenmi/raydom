@@ -1,7 +1,8 @@
 export interface Tag {
-  name: string
+  tagName: string
+  children?: Iterable<string>
 }
 
-export let T = (name: string) => {
-  return { name }
+export let T = (tagName: string, children?: Iterable<string>) => {
+  return { tagName, children }
 }

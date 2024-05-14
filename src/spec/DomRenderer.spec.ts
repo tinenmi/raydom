@@ -84,4 +84,15 @@ describe('Dom renderer', () => {
     renderer.render(T('div'))
     expect(root?.innerHTML).toBe('<div></div>')
   })
+
+  it('render simple tag with text', async () => {
+    document.body.innerHTML = `
+      <div id="root"></div>
+    `
+
+    let root = document.getElementById('root') as Element
+    let renderer = new DomRenderer(root)
+    renderer.render(T('div', [ 'Root there' ]))
+    expect(root?.innerHTML).toBe('<div>Root there</div>')
+  })
 })

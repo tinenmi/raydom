@@ -8,12 +8,14 @@ let clearChildren = (el: Element) => { while(el.lastChild) el.removeChild(el.las
 
 let replaceWith = (oldDom: DOM | undefined, newDom: DOM) => {
   if (typeof oldDom === 'undefined') { return }
+
   if (oldDom instanceof Node && newDom instanceof Node) {
     let parent: Element | null = (oldDom as Node).parentElement
     parent?.replaceChild(newDom as Node, oldDom as Node)
   } else {
     if (oldDom instanceof Node) { oldDom = [ oldDom ] }
     if (newDom instanceof Node) { newDom = [ newDom ] }
+
     let oldIterator = oldDom[Symbol.iterator]()
     let newIterator = newDom[Symbol.iterator]()
 
@@ -62,7 +64,14 @@ export class DomRenderer {
   }
 
   newTag(content: Tag): DOM {
-    return document.createElement(content.name)
+    let result = document.createElement(content.tagName)
+
+    if (content.children) {
+      let chidlren = this.newIterable(content.children)
+      result.append(...chidlren)
+    }
+
+    return result
   }
 
   newView($content: Ray<Content>): DOM {
@@ -83,7 +92,7 @@ export class DomRenderer {
     if (typeof content === 'string') {
       return this.newText(content as string)
     }
-    if (typeof (content as Tag).name === 'string') {
+    if (typeof (content as Tag).tagName === 'string') {
       return this.newTag(content as Tag)
     }
     if (typeof content === 'function') {

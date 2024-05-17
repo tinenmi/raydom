@@ -1,7 +1,11 @@
 import { $, $Interface } from "../lib/$"
 import { DomRenderer } from "../lib/DomRenderer"
 import { Content, T } from "../lib/T"
+import { View } from "../lib/View"
 import { Viewer } from "../lib/Viewer"
+import { P } from "../lib/function-helpers/P"
+import { cast } from "../lib/view-helpers/cast"
+import { ray } from "../lib/view-helpers/ray"
 
 describe('Dom renderer', () => {
   it('render string', async () => {

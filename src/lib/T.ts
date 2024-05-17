@@ -1,4 +1,4 @@
-export type Content = string | Iterable<Content> | Ray<Content> | Tag
+export type Content = boolean | number | string | Iterable<Content> | Ray<Content> | Tag
 
 export interface Tag {
   isTag: true

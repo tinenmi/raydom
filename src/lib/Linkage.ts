@@ -21,7 +21,8 @@ export class Linkage {
   }
 
   poke(ray: Ray<any>) {
-    for(let target of this.map.get(ray) || []) {
+    let runningTargets = [...this.map.get(ray) || []]
+    for(let target of runningTargets) {
         target.poke()
     }
   }

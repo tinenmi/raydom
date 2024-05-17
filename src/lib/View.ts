@@ -10,7 +10,6 @@ export interface ViewInterface<T> extends Ray<T> {
 export class View<T> {
   viewer: Viewer
   $value: $Interface<T>
-  value?: T
   
   private constructor(computeFunction: ComputeFunction<T>) {
     this.$value = $.new()
@@ -18,7 +17,6 @@ export class View<T> {
       let newValue = computeFunction()
       this.$value(newValue)
     })
-    this.value = this.$value()
   }
 
   call(self: ViewInterface<T>): T | undefined {

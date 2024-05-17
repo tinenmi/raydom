@@ -7,12 +7,12 @@ module.exports = {
   input: 'src/index.ts',
   output: {
     dir: 'dist',
-    format: 'umd',
+    format: 'iife',
     name: 'raydom',
   },
   plugins: [
     typescript(),
-    isProduction ? uglify({
+    !isProduction ? uglify({
       compress: {
         pure_funcs: [ 'console.log' ]
       },

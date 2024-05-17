@@ -133,6 +133,12 @@ export class DomRenderer {
     if (typeof content === 'undefined') {
       return newText('')
     }
+    if (typeof content === 'boolean') {
+        return newText(('' + content) as string)
+    }    
+    if (typeof content === 'number') {
+        return newText(('' + content) as string)
+    }
     if (typeof content === 'string') {
       return newText(content as string)
     }
@@ -142,7 +148,11 @@ export class DomRenderer {
     if (typeof content === 'function') {
       return this.newView(content as Ray<Content>)
     }
-    return this.newIterable(content as Iterable<Content>)
+    // @ts-ignore
+    if(content?.[Symbol.iterator]) {
+      return this.newIterable(content as Iterable<Content>)
+    }
+    throw 'Not implemented'
   }
 
   render(content: Content) {

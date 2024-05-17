@@ -40,4 +40,30 @@ describe('View', () => {
     let view = $view()
     expect(view).toEqual('View has data: 2')
   })
+
+  it('chain of views', async () => {
+    let $model = $.new(0)
+    let $model2 = View.new(() => $model())
+    let $model3 = View.new(() => $model2())
+    let $model4 = View.new(() => $model3())
+
+    $model(1)
+
+    expect($model4()).toEqual(1)
+  })
+
+  it('counter', async () => {
+    let $counter = $.new(0)
+    let $isEven = P($counter, cast((x: any) => (x & 1) == 0))
+    let $parity = P($isEven, cast((x: any) => x ? "even" : "odd"))
+    let $view = View.new(() => $counter() + ' - ' + $parity())
+        
+    setTimeout(() => $counter(1), 200)
+    setTimeout(() => $counter(2), 400)
+    setTimeout(() => $counter(3), 600)
+    setTimeout(() => $counter(4), 800)
+    setTimeout(() => $counter(5), 1000)
+
+    setTimeout(() => expect($view()).toBe('5 - even'), 1000)
+  })
 })

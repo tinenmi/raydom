@@ -128,10 +128,8 @@ describe('Dom renderer', () => {
       $title: Ray<string>
       $raydom: $Interface<Content>
     }
-    let Component = (({ $title, $raydom }: Props) => {
-      Viewer.new(() => {
-        $raydom(T('div', [ $title ] ))
-      })
+    let Component = (({ $title }: Props) => {
+      return T('div', [ $title ] )
     })
 
     let root = document.getElementById('root') as Element
@@ -151,10 +149,8 @@ describe('Dom renderer', () => {
       $raydom: $Interface<Content>
     }
 
-    let Component = (({ $title, $raydom }: Props) => {
-      Viewer.new(() => {
-        $raydom(T(Title, [ $title ] ))
-      })
+    let Component = (({ $title }: Props) => {
+      return T(Title, [ $title ] )
     })
 
     let root = document.getElementById('root') as Element

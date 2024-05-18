@@ -115,7 +115,7 @@ export class DomRenderer {
 
     let Component = tagName as Function
     let $raydom = $.new<Content>()
-    Component({...attrs, children, $raydom})
+    Viewer.new(() => $raydom(Component({ ...attrs, children })))
     return this.newView($raydom)
   }
 

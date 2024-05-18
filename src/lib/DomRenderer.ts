@@ -47,8 +47,12 @@ let newText = (content: string): Text => {
 export class DomRenderer {
   renderTarget: Element
 
-  constructor(renderTarget: Element) {
+  private constructor(renderTarget: Element) {
     this.renderTarget = renderTarget
+  }
+
+  public static new(renderTarget: Element): DomRenderer {
+    return new DomRenderer(renderTarget)
   }
 
   newIterable(content: Iterable<Content>): Iterable<Node> {

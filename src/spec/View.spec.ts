@@ -1,4 +1,4 @@
-import { $, P, View, cast, lense } from "../lib/index"
+import { $, P, View, cast, lense, resolve } from "../lib/index"
 import { ray } from "../lib/view-helpers/ray"
 
 describe('View', () => {

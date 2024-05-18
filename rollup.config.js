@@ -12,7 +12,7 @@ module.exports = {
   },
   plugins: [
     typescript(),
-    !isProduction ? uglify({
+    isProduction ? uglify({
       compress: {
         pure_funcs: [ 'console.log' ]
       },

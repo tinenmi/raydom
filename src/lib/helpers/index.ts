@@ -1,5 +1,7 @@
+export { I } from './I'
+export { O } from './O'
 export { cast } from './cast'
 export { lense } from './lense'
 export { ray } from './ray'
 export { resolve } from './resolve'
-export { readonly } from './readonly'
+export { peek } from './peek'

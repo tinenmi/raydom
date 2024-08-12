@@ -1,4 +1,4 @@
 export { 
     $, $Interface, Tracker, Viewer, View, ViewInterface, 
-    P, T, cast, lense, ray, readonly, resolve,
-    DomRenderer } from './lib/index'
+    I, O, cast, lense, ray, resolve,
+    RayDom } from './lib/index'

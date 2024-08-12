@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Двухколоночная страница с виджетами</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-blue-200">
+  <div id = "app" class="container mx-auto p-4" />
+  <script src="../dist/index.js"></script>
+  <script>
+    let { $, RayDom, Viewer, ray, I, O, cast, View, resolve, lense } = raydom
+    let castMap = (mapFunction) => cast( x => x.map(mapFunction) )
+      
+    let fetchJson = (url, options) => fetch(url, options).then(resp => resp.json())
+
+    let tap_widget = ({ children }) => {
+      let $value = $.new(0)
+      
+      let onclick = () => { $value($value() + 1) }
+      
+      return (
+//        View.new(() =>
+          O(widget.layout, [
+            O(widget.title, [ "Clicker" ]),
+            O(widget.content, [ O(tap_widget.round, { onclick }, [ $value ]) ]),
+          ])
+//        )
+      )
+    }
+    
+    tap_widget.round = O('div', { style:  'position: relative; top: 50%; left: 50%; width: 64px; height: 64px; border: 2px solid black; border-radius: 50%; transform: translate(-50%, -50%); text-align: center; padding-top: 20px; user-select: none;' })
+
+    let timer_widget = () => {
+      let $a = $.new(0)
+      let $b = $.new(0)
+      let $result = View.new(() => $a() + $b())
+      let $content = View.new(() => $a() + ' + ' +  $b() + ' = ' + $result())
+        
+      setInterval(() => { $a($a() + 1) }, 5000)
+      setInterval(() => { $b($b() + 1) }, 3000)
+      
+      return (
+        O(widget.layout, [
+          O(widget.title, [ "Fizz Buzz Timer" ]),
+          O(widget.content, [ $content ]),
+        ])
+      )
+    }
+      
+    let joke_widget = ({ $raydom }) => {
+      let apiUri = 'https://api.api-ninjas.com/v1/jokes?limit=1'
+      let apiKey = 'CwqfegPWJ7g9htQ+KZTIVA==2lLfXC9V5jUk6Oy0'
+      let fetchJoke = () => fetchJson(apiUri, { headers: { 'X-Api-Key': apiKey } })
+    
+      let $joke = $.new()
+      fetchJoke().then(data => $joke(data[0].joke))
+      
+      let $jokeParts = I($joke, cast(x => x?.split('?') || []))     
+      let $content = I(
+        $jokeParts, 
+        cast(x => x.length === 2 
+          ? [`${x[0]}?`, x[1]] 
+          : [$joke()
+      , '']))
+      
+      return (
+        O(widget.layout, [
+          O(widget.title, [ "Joke" ]),
+          O(widget.content, [ I($content, castMap( x => O('p', [ x ]))) ]),
+        ])
+      )
+    }
+      
+    let one_field_form = ({ title, actionTitle, $value, $answerText, $markup }) => {
+      let $inputValue = $.new($value())
+        
+      let oninput = ({ target }) => {
+        $inputValue(target.value)
+      }
+        
+      let onclick = () => {
+        $value($inputValue())
+      }
+
+      return (
+        O(widget.layout, [
+          O(widget.title, [ title ]),
+          O(one_field_form.field, [ 
+            O(one_field_form.input, { type: 'text', value: $inputValue, oninput }, []),
+            O(one_field_form.button, { onclick }, [ actionTitle ]),
+          ]),
+          O(one_field_form.answer, [ $answerText ]),
+        ])
+      )
+    }
+
+    one_field_form.label = O('label', { className: '' })
+    one_field_form.field = O('div', { className: '' })
+    one_field_form.input = O('input', { className: 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm px-1' })
+    one_field_form.button = O('button', { className: 'inline-block bg-gray-300 py-2 px-4 rounded-md' })
+    one_field_form.answer = O('div', { className: 'bg-green-200 text-green-800 p-4 my-2 rounded-md shadow-md' })
+
+    let temperature_converter_widget = ({ $markup }) => {
+      let $celsius = $.new(0)
+      let $fahrenheit = I($celsius, cast(x => x * 9 / 5 + 32))
+      let $answerText = I($fahrenheit, cast(x => `${Math.round(x, 2)} °F`))
+        
+      return (
+        O(one_field_form, { 
+          title: 'Temperature in Celsius',
+          actionTitle: 'To Fahrenheit',
+          $value: $celsius, 
+          $answerText,
+        }, [])
+      )
+    }
+
+    let rates_widget = ({ rates }) => {
+      let $rates = $.new({})
+      fetchJson('https://api.frankfurter.app/latest').then(data => $rates(data.rates))
+
+      return (
+        O(widget.layout, [
+          O(widget.title, [ '€1 in different currencies' ]),
+          O(widget.content, [ 
+            O('ul', [
+              I($rates, 
+                cast(x => Object.keys(x)), castMap(key => 
+                  O('li', [ `${key} `, O('span', [ $rates()[key] ])])
+              ))
+            ])
+          ])
+        ])
+      )
+    }
+
+    let APIkeys = {
+      geo: '3d65cb4e60794be2b10cd47c645e9b61',
+      weather: 'caafdc579fd54de8e359dc5550246a2e',
+    }
+
+    let fetchIP = () => 
+      fetchJson('https://api.ipify.org?format=json')
+        .then(data => data.ip)
+     
+    let fetchGeo = (ip) => 
+      fetchJson(`https://ipgeolocation.abstractapi.com/v1/?api_key=${APIkeys.geo}&ip_address=${ip}`)
+        .then(data => {
+          let { city, region_iso_code, country_code, latitude, longitude } = data
+          return({ city, region_iso_code, country_code, latitude, longitude })
+        })
+     
+    let fetchWeather = ({ latitude, longitude }) => 
+      fetchJson(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${APIkeys.weather}`)
+        .then(data => data.weather && ({
+          description: data.weather[0].description,
+          icon:  data.weather[0].icon,
+          temperature: data.main.temp,
+          wind: { speed: data.wind.speed, degrees: data.wind.deg }
+        }))
+     
+      let directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW', 'N']
+      let getDirectionString = (degrees) => {
+      for(let i = 0; i < directions.length; i++) {
+        if (degrees < 22.5 + 45 * i) {
+          return directions[i];
+        }
+      }
+    }
+     
+    let getWindString = ({ degrees, speed }) => `${getDirectionString(degrees)} ${speed} m/s`
+  
+    let convertTemperature = (temperature) => {
+      let celsius = temperature - 273.15
+      return Math.round(celsius, 2)
+    }
+  
+    let getTemperatureString = (temperature) => `${convertTemperature(temperature)}°C`
+      
+    let getWeatherBackgroundImage = (icon) => `url(https://openweathermap.org/img/wn/${icon}@2x.png)`
+
+    let weather_widget = () => {
+      let $ip = $.new()
+      fetchIP().then(ip => $ip(ip))
+
+      let $geo = $.new()
+      Viewer.new(() => {
+        let ip = $ip();
+        ip && fetchGeo(ip).then(geo => $geo(geo)) 
+      })
+
+      let $weather = $.new()
+      Viewer.new(() => {
+        let geo = $geo();
+        geo && fetchWeather(geo).then(weather => $weather(weather)) 
+      })
+      
+      let $city = I($geo, lense('city'))
+      let $temperatureString = I($weather, lense('temperature'), cast(getTemperatureString))
+      let $windString = I($weather, lense('wind'), cast(getWindString))
+      let $weatherDescription = I($weather, lense('description'))
+      let $weatherIconBackgroundImage = I($weather, lense('icon'), cast(getWeatherBackgroundImage))
+        
+      return (
+        O(widget.layout, [
+          O(widget.title, [ ray`Weather in ${$city}` ]),
+          O(widget.content, [
+            O('div', { style: ray`width: 50px; height: 50px; background-size: cover; background-image: ${$weatherIconBackgroundImage}` }, [ '' ]),
+          ]),
+          O('div', [
+            O(widget.content, [ ray`${$temperatureString}, ${$windString}` ]),
+            O(widget.content, [ $weatherDescription ]),
+          ])
+        ])
+      )
+    }
+
+    let todo_widget = ({ }) => {    
+      let $todos = $.new([])
+      let $newText = $.new('')
+
+      let oninput = ({ target }) => {
+        $newText(target.value)
+      }
+
+      let onclick = () => {
+        $todos($todos().concat($newText()))
+        $newText(' ')
+      }
+
+      return (
+        O(widget.layout, [
+          O(widget.title, [ 'Todo List' ]),
+          O(one_field_form.field, [ 
+            O(one_field_form.input, { value: $newText, oninput, placeholder: 'todo text' }, []),
+            O(one_field_form.button, { onclick }, [ 'Add' ]),
+          ]),
+          O('ul', [ 
+            I($todos, castMap(x => O('li', [ x ])))
+          ]),          
+        ])
+      )
+    }
+
+    let widget = ({ title, children }) => {
+      return (
+        O(widget.layout, [
+          O(widget.title, [ title ]),
+          O(widget.content, [ children ]),
+        ])
+      )
+    }
+      
+    widget.layout = O('div', { className: 'bg-gray-200 p-6 shadow-lg' })
+    widget.title = O('h2', { className: 'text-2xl font-bold mb-4' })
+    widget.content = O('p', { className: 'text-gray-700' })
+      
+    let app = () => {
+      return (
+        O(app.grid, [
+          O(app.column, [
+            O(tap_widget),
+            O(joke_widget),
+            O(rates_widget),
+          ]),
+          O(app.column, [
+            O(timer_widget),
+             O(temperature_converter_widget),
+             O(weather_widget),
+             O(todo_widget),
+          ])
+        ])
+      )
+    }  
+    
+    app.grid = O('div', { className: 'grid grid-cols-1 md:grid-cols-2 gap-4' })
+    app.column = O('div', { className: 'grid gap-4' })  
+
+    let renderWidgets = () => {
+      let root = document.getElementById('app')
+      let renderer = RayDom.new(root).render(O(app, []))
+    }
+  </script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-import { peek } from "../../lib/array-helpers/peek"
+import { peek } from "../../lib/helpers/peek"
 
 describe('peek', () => {
   it('peek of empty array is undefined', () => {

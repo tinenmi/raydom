@@ -5,9 +5,9 @@ describe('Tracker', () => {
     let calledTimes = 0
     let viewer = Viewer.new(() => { calledTimes++ })
     let $value = $.new(0)
-    Tracker.linkage.bond(viewer, $value)
+    Tracker.l.bond(viewer, $value)
     let calledTimes_beforePoke = calledTimes
-    Tracker.linkage.poke($value)
+    Tracker.l.poke($value)
     let calledTimes_afterPoke = calledTimes
     expect(calledTimes_beforePoke).toBe(1)    
     expect(calledTimes_afterPoke).toBe(2)
@@ -21,7 +21,7 @@ describe('Tracker', () => {
     Tracker.tease($value)
     Tracker.targets.pop()
     let calledTimes_beforePoke = calledTimes
-    Tracker.linkage.poke($value)
+    Tracker.l.poke($value)
     let calledTimes_afterPoke = calledTimes
     expect(calledTimes_beforePoke).toBe(1)    
     expect(calledTimes_afterPoke).toBe(2)

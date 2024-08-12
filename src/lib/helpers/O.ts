@@ -7,7 +7,7 @@ export interface Tag {
   children?: Iterable<Content>
 }
 
-export let T = (
+export let O = (
   tagName: string | Function | Tag,
   attrs?: {} | Iterable<Content>,
   children?: Iterable<Content>

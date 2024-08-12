@@ -1,18 +1,13 @@
-import { $, $Interface } from "../lib/$"
-import { DomRenderer } from "../lib/DomRenderer"
-import { Content, T } from "../lib/T"
-import { View } from "../lib/View"
-import { Viewer } from "../lib/Viewer"
-import { P } from "../lib/function-helpers/P"
-import { cast } from "../lib/view-helpers/cast"
-import { ray } from "../lib/view-helpers/ray"
+import { $ } from "../lib/$"
+import { RayDom } from "../lib/RayDom"
+import { O } from "../lib/helpers/O"
 
 describe('Dom renderer', () => {
   it('render string', async () => {
     document.body.innerHTML = `<div id="root"></div>`
 
     let root = document.getElementById('root') as Element
-    DomRenderer.new(root).render('Root there')
+    RayDom.new(root).render('Root there')
     expect(root?.innerHTML).toBe('Root there')
   })
 
@@ -20,7 +15,7 @@ describe('Dom renderer', () => {
     document.body.innerHTML = `<div id="root"></div>`
 
     let root = document.getElementById('root') as Element
-    DomRenderer.new(root).render([ 'Root', ' there' ])
+    RayDom.new(root).render([ 'Root', ' there' ])
     expect(root?.innerHTML).toBe('Root there')
   })
 
@@ -28,7 +23,7 @@ describe('Dom renderer', () => {
     document.body.innerHTML = `<div id="root"></div>`
 
     let root = document.getElementById('root') as Element
-    DomRenderer.new(root).render([[ 'Root', ' there' ], ' and here'])
+    RayDom.new(root).render([[ 'Root', ' there' ], ' and here'])
     expect(root?.innerHTML).toBe('Root there and here')
   })
 
@@ -36,7 +31,7 @@ describe('Dom renderer', () => {
     document.body.innerHTML = `<div id="root"></div>`
 
     let root = document.getElementById('root') as Element
-    let renderer = DomRenderer.new(root)
+    let renderer = RayDom.new(root)
     renderer.render('Root there')
     renderer.render('Root here')
     expect(root?.innerHTML).toBe('Root here')
@@ -46,7 +41,7 @@ describe('Dom renderer', () => {
     document.body.innerHTML = `<div id="root"></div>`
 
     let root = document.getElementById('root') as Element
-    let renderer = DomRenderer.new(root)
+    let renderer = RayDom.new(root)
     let $model = $.new('Root there')
     renderer.render($model)
     $model('Root here')
@@ -57,7 +52,7 @@ describe('Dom renderer', () => {
     document.body.innerHTML = `<div id="root"></div>`
 
     let root = document.getElementById('root') as Element
-    let renderer = DomRenderer.new(root)
+    let renderer = RayDom.new(root)
     let $model = $.new(['Root', ' there'])
     renderer.render($model)
     $model(['Root', ' here'])
@@ -68,8 +63,8 @@ describe('Dom renderer', () => {
     document.body.innerHTML = `<div id="root"></div>`
 
     let root = document.getElementById('root') as Element
-    let renderer = DomRenderer.new(root)
-    renderer.render(T('div'))
+    let renderer = RayDom.new(root)
+    renderer.render(O('div'))
     expect(root?.innerHTML).toBe('<div></div>')
   })
 
@@ -77,8 +72,8 @@ describe('Dom renderer', () => {
     document.body.innerHTML = `<div id="root"></div>`
 
     let root = document.getElementById('root') as Element
-    let renderer = DomRenderer.new(root)
-    renderer.render(T('div', [ 'Root there' ]))
+    let renderer = RayDom.new(root)
+    renderer.render(O('div', [ 'Root there' ]))
     expect(root?.innerHTML).toBe('<div>Root there</div>')
   })
 
@@ -86,8 +81,8 @@ describe('Dom renderer', () => {
     document.body.innerHTML = `<div id="root"></div>`
 
     let root = document.getElementById('root') as Element
-    let renderer = DomRenderer.new(root)
-    renderer.render(T('div', [ T('div') ]))
+    let renderer = RayDom.new(root)
+    renderer.render(O('div', [ O('div') ]))
     expect(root?.innerHTML).toBe('<div><div></div></div>')
   })
 
@@ -96,8 +91,8 @@ describe('Dom renderer', () => {
 
     let root = document.getElementById('root') as Element
     let $model = $.new('Root there')
-    let renderer = DomRenderer.new(root)
-    renderer.render(T('div', [ $model ]))
+    let renderer = RayDom.new(root)
+    renderer.render(O('div', [ $model ]))
     $model('Root here')
     expect(root?.innerHTML).toBe('<div>Root here</div>')
   })
@@ -106,8 +101,8 @@ describe('Dom renderer', () => {
     document.body.innerHTML = `<div id="root"></div>`
 
     let root = document.getElementById('root') as Element
-    let renderer = DomRenderer.new(root)
-    renderer.render(T('div', { id: 'child' }))
+    let renderer = RayDom.new(root)
+    renderer.render(O('div', { id: 'child' }))
     expect(root?.innerHTML).toBe('<div id="child"></div>')
   })
 
@@ -115,48 +110,75 @@ describe('Dom renderer', () => {
     document.body.innerHTML = `<div id="root"></div>`
 
     let root = document.getElementById('root') as Element
-    let renderer = DomRenderer.new(root)
+    let renderer = RayDom.new(root)
     let $model = $.new('child')
-    renderer.render(T('div', { id: $model }))
+    renderer.render(O('div', { id: $model }))
     $model('container')
     expect(root?.innerHTML).toBe('<div id="container"></div>')
+  })
+
+  it('render simplest component', async () => {
+    document.body.innerHTML = `<div id="root"></div>`
+
+    let Component = () => {
+      return O('div', [ 'container' ] )
+    }
+
+    let root = document.getElementById('root') as Element
+    RayDom.new(root).render(O(Component, []))
+    expect(root?.innerHTML).toBe('<div>container</div>')
+  })
+
+  it('render component with simple props', async () => {
+    document.body.innerHTML = `<div id="root"></div>`
+
+    interface Props {
+      title: string
+    }
+
+    let Component = ({ title }: Props) => {
+      return O('div', [ title ] )
+    }
+
+    let root = document.getElementById('root') as Element
+    RayDom.new(root).render(O(Component, { title: 'container' } , []))
+    expect(root?.innerHTML).toBe('<div>container</div>')
   })
 
   it('render components', async () => {
     document.body.innerHTML = `<div id="root"></div>`
     interface Props {
       $title: Ray<string>
-      $raydom: $Interface<Content>
     }
     let Component = (({ $title }: Props) => {
-      return T('div', [ $title ] )
+      return O('div', [ $title ] )
     })
 
-    let root = document.getElementById('root') as Element
-    let renderer = DomRenderer.new(root)
     let $model = $.new('child')
-    renderer.render(T(Component, { $title: $model }, []))
+
+    let root = document.getElementById('root') as Element
+    RayDom.new(root).render(O(Component, { $title: $model }, []))
+    
     $model('container')
     expect(root?.innerHTML).toBe('<div>container</div>')
   })
 
   it('props components', async () => {
     document.body.innerHTML = `<div id="root"></div>`
-    let Title = T('h1', { className: 'title' })
+    let Title = O('h1', { className: 'title' })
 
     interface Props {
       $title: Ray<string>
-      $raydom: $Interface<Content>
     }
 
     let Component = (({ $title }: Props) => {
-      return T(Title, [ $title ] )
+      return O(Title, [ $title ] )
     })
 
     let root = document.getElementById('root') as Element
-    let renderer = DomRenderer.new(root)
+    let renderer = RayDom.new(root)
     let $model = $.new('child')
-    renderer.render(T(Component, { $title: $model }, []))
+    renderer.render(O(Component, { $title: $model }, []))
     expect(root?.innerHTML).toBe('<h1 class="title">child</h1>')
   })
 })

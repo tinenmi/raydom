@@ -1,4 +1,5 @@
-import { Target, Tracker } from "./Tracker"
+import { RQ } from "./aux/index"
+import { Target, Tracker } from "./aux/Tracker"
 
 type Reaction = (self: Viewer) => void
 type OnPurge = () => void
@@ -12,7 +13,7 @@ export class Viewer implements Target {
   private constructor(response: Reaction) {
     this.poked = false
     this.garbaged = false
-    Tracker.registerChild(this)
+    Tracker.reg(this)
     this.response = response
     this.poke()
   }
@@ -21,16 +22,13 @@ export class Viewer implements Target {
     if (!this.poked) {
       this.poked = true
     } else {
-      this.purge()
+      // TODO uncomment this.purge()
     }
-    Tracker.targets.push(this)
-    Tracker.linkage.unbond(this)
-    this.response(this)
-    Tracker.targets.pop()
+    RQ.run(this)
   }
 
   purge() {
-    Tracker.purgeChildren(this)
+    Tracker.purge(this)
     if (!this.onpurge) return
     this.onpurge()
     delete this.onpurge
@@ -38,7 +36,8 @@ export class Viewer implements Target {
 
   garbage() {
     this.garbaged = true
-    Tracker.purgeChildren(this)
+    RQ.abort(this)
+    this.purge()
   }
 
   static new(response: Reaction) {
